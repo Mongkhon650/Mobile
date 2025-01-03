@@ -6,7 +6,7 @@ class CategoriesTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'หมวดหมู่',
+        'หมวดหมู่สินค้า',
       ),
     );
   }
