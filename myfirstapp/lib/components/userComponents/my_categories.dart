@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myfirstapp/models/type_card.dart';
-import '../../page/userPages/categories_page.dart';
 
-import '../adminComponents/type_tile.dart';
-
-class MyCategories extends StatefulWidget {
-  const MyCategories({super.key});
-
-  @override
-  State<MyCategories> createState() => _MyCategoriesState();
-}
-
-class _MyCategoriesState extends State<MyCategories> {
-
+class MyCategories extends StatelessWidget {
+  const MyCategories({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +12,7 @@ class _MyCategoriesState extends State<MyCategories> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Categories',
                 style: TextStyle(
                   fontSize: 22,
@@ -32,9 +21,11 @@ class _MyCategoriesState extends State<MyCategories> {
               ),
               TextButton(
                 onPressed: () {
+                  // เปิดหน้า CategoriesPage (สามารถเพิ่มได้ภายหลัง)
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CategoriesPage()));
+                      MaterialPageRoute(
+                          builder: (context) => const PlaceholderPage()));
                 },
                 child: Text(
                   'View all',
@@ -47,14 +38,12 @@ class _MyCategoriesState extends State<MyCategories> {
             ],
           ),
           SizedBox(
-            height: 100, // กำหนดความสูงให้กับ ListView เพื่อไม่ให้ Expanded เกิด error
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: typeImages.length,
-              itemBuilder: (context, index) {
-                TypeModel type = typeImages[index];
-                return TypeTile(type: type);
-              },
+            height: 250, // ความสูงของ ListView
+            child: Center(
+              child: Text(
+                'No categories available.',
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -63,3 +52,17 @@ class _MyCategoriesState extends State<MyCategories> {
   }
 }
 
+// PlaceholderPage สำหรับการนำไปใช้งานในอนาคต
+class PlaceholderPage extends StatelessWidget {
+  const PlaceholderPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Categories Page")),
+      body: const Center(
+        child: Text("This is a placeholder page."),
+      ),
+    );
+  }
+}
