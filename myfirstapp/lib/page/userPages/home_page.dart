@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:myfirstapp/components/userComponents/my_drawer.dart';
-import 'package:myfirstapp/components/userComponents/featured_tile.dart';
 import 'package:myfirstapp/components/my_searchfield.dart';
 import 'package:myfirstapp/components/my_sliver_app_bar.dart';
 import 'package:provider/provider.dart';
 import '../../components/userComponents/my_categories.dart';
-import '../../components/userComponents/promotion_tile.dart';
-import '../../components/userComponents/ิbest_sell_tile.dart';
+import 'package:myfirstapp/components/userComponents/userServices/dynamic_list_cate.dart';
 
 class HomePage extends StatefulWidget {
   final String userName; // รับ userName จาก LoginPage
@@ -39,9 +37,7 @@ class _HomePageState extends State<HomePage> {
                       children: const [
                         MySearchfield(),
                         MyCategories(),
-                        FeaturedTile(),
-                        BestSellTile(),
-                        PromotionTile(),
+                        DynamicListCategories(),
                       ],
                     ),
                   ),
