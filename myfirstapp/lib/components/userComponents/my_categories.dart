@@ -1,7 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class MyCategories extends StatelessWidget {
+class MyCategories extends StatefulWidget {
   const MyCategories({Key? key}) : super(key: key);
+
+  @override
+  _MyCategoriesState createState() => _MyCategoriesState();
+}
+
+class _MyCategoriesState extends State<MyCategories> {
+  List<dynamic> _categories = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
+
+  // ดึงข้อมูล Categories จาก API
+  Future<void> _fetchCategories() async {
+    try {
+      final response =
+      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-product-types')); // URL ของ API
+      if (response.statusCode == 200) {
+        setState(() {
+          _categories = json.decode(response.body);
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,6 +48,7 @@ class MyCategories extends StatelessWidget {
       color: Colors.grey.shade100,
       child: Column(
         children: [
+          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -21,11 +61,12 @@ class MyCategories extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  // เปิดหน้า CategoriesPage (สามารถเพิ่มได้ภายหลัง)
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PlaceholderPage()));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PlaceholderPage(categories: _categories), // ส่ง Categories ไป
+                    ),
+                  );
                 },
                 child: Text(
                   'View all',
@@ -37,13 +78,66 @@ class MyCategories extends StatelessWidget {
               ),
             ],
           ),
+
+          // Categories List
           SizedBox(
-            height: 250, // ความสูงของ ListView
-            child: Center(
+            height: 100,
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _categories.isEmpty
+                ? Center(
               child: Text(
                 'No categories available.',
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
               ),
+            )
+                : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _categories.length,
+              itemBuilder: (context, index) {
+                final category = _categories[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          image: category['image'] != null
+                              ? DecorationImage(
+                            image: NetworkImage(category['image']),
+                            fit: BoxFit.contain,
+                          )
+                              : null,
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      Container(
+                        height: 100,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            category['name'],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -52,16 +146,71 @@ class MyCategories extends StatelessWidget {
   }
 }
 
-// PlaceholderPage สำหรับการนำไปใช้งานในอนาคต
+// PlaceholderPage สำหรับ View All
 class PlaceholderPage extends StatelessWidget {
-  const PlaceholderPage({Key? key}) : super(key: key);
+  final List<dynamic> categories;
+
+  const PlaceholderPage({Key? key, required this.categories}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Categories Page")),
-      body: const Center(
-        child: Text("This is a placeholder page."),
+      appBar: AppBar(
+        title: const Text("All Categories"),
+      ),
+      body: categories.isEmpty
+          ? Center(
+        child: Text(
+          'No categories available.',
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+        ),
+      )
+          : GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, // จำนวนคอลัมน์ใน Grid
+          crossAxisSpacing: 4.0, // ปรับให้ชิดกันมากขึ้น
+          mainAxisSpacing: 4.0, // ปรับให้ชิดกันมากขึ้น
+          childAspectRatio: 1.2, // ปรับอัตราส่วนของ Card
+        ),
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: category['image'] != null
+                      ? DecorationImage(
+                    image: NetworkImage(category['image']),
+                    fit: BoxFit.contain,
+                  )
+                      : null,
+                  color: Colors.grey.shade300,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.black.withOpacity(0.5),
+                ),
+                child: Center(
+                  child: Text(
+                    category['name'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
