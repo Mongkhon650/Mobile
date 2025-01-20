@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dynamic_product.dart';
 
 class DynamicListCategories extends StatefulWidget {
   const DynamicListCategories({Key? key}) : super(key: key);
@@ -35,7 +36,7 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
         for (var category in categories) {
           final categoryId = category['category_id'];
           final productsResponse = await http.get(
-            Uri.parse('http://10.0.2.2:3000/api/get-products-by-category/$categoryId'),
+            Uri.parse('http://10.0.2.2:3000/api/get-products/$categoryId'), // ใช้ API ใหม่
           );
 
           if (productsResponse.statusCode == 200) {
@@ -96,7 +97,6 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
                             categoryName,
                             style: const TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
                           ),
@@ -113,7 +113,13 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
                                 ),
                               );
                             },
-                            child: const Text('View all'),
+                            child: Text(
+                                'View all',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                            ),
                           ),
                         ],
                       ),
@@ -139,75 +145,79 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
                           final product = products[index];
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: 150,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(12),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey
-                                        .withOpacity(0.3),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  // รูปสินค้า
-                                  Container(
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                      const BorderRadius
-                                          .vertical(
-                                        top: Radius.circular(12),
-                                      ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          product['image'] ??
-                                              'https://via.placeholder.com/150',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
+                            child: GestureDetector(
+                              onTap: () {
+                                // นำไปยังหน้ารายละเอียดสินค้า
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DynamicProductPage(
+                                      productId: product['product_id'], // ส่ง productId ไปยัง DynamicProductPage
                                     ),
                                   ),
-                                  // ชื่อสินค้าและราคา
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          product['name'] ??
-                                              'Unknown',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight:
-                                            FontWeight.bold,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow
-                                              .ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '\$${product['price'] ?? '0.00'}',
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.green,
-                                          ),
-                                        ),
-                                      ],
+                                );
+                              },
+                              child: Container(
+                                width: 140,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 3),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // รูปสินค้า
+                                    Container(
+                                      height: 124,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.vertical(
+                                          top: Radius.circular(12),
+                                        ),
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            product['image'] ?? 'https://via.placeholder.com/150',
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    // ราคาและชื่อสินค้า
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          // ราคา (อยู่ด้านบน)
+                                          Text(
+                                            '\$${product['price'] ?? '0.00'}',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey, // เปลี่ยนสีเป็นเทา
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          // ชื่อสินค้า (อยู่ด้านล่าง)
+                                          Text(
+                                            product['name'] ?? 'Unknown',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
