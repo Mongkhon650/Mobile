@@ -70,7 +70,7 @@ class _CateDynamicProductPageState extends State<CateDynamicProductPage> {
           crossAxisCount: 2, // จำนวนคอลัมน์
           crossAxisSpacing: 8, // ระยะห่างระหว่างคอลัมน์
           mainAxisSpacing: 8, // ระยะห่างระหว่างแถว
-          childAspectRatio: 0.8, // อัตราส่วนของการ์ดสินค้า
+          childAspectRatio: 0.97, // อัตราส่วนของการ์ดสินค้า
         ),
         itemCount: _products.length,
         itemBuilder: (context, index) {
@@ -104,7 +104,7 @@ class _CateDynamicProductPageState extends State<CateDynamicProductPage> {
                 children: [
                   // รูปสินค้า
                   Container(
-                    height: 120,
+                    height: 140,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(12),
@@ -123,6 +123,15 @@ class _CateDynamicProductPageState extends State<CateDynamicProductPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // ราคาสินค้า
+                        Text(
+                          '฿${product['price'] ?? '0.00'}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         // ชื่อสินค้า
                         Text(
                           product['name'] ?? 'Unknown',
@@ -132,15 +141,6 @@ class _CateDynamicProductPageState extends State<CateDynamicProductPage> {
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        // ราคาสินค้า
-                        Text(
-                          '฿${product['price'] ?? '0.00'}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.green,
-                          ),
                         ),
                       ],
                     ),
