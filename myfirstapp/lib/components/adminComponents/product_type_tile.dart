@@ -47,7 +47,7 @@ class _ProductTypeTileState extends State<ProductTypeTile> {
     }
   }
 
-  void _onAddCategory(String name, String imagePath) async {
+  void _onAddType(String name, String imagePath) async {
     await _fetchProductTypes();
   }
 
@@ -156,7 +156,7 @@ class _ProductTypeTileState extends State<ProductTypeTile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddCategoryPage(onAddCategory: _onAddCategory),
+                    builder: (context) => AddProductPage(onAddCategory: _onAddType),
                   ),
                 );
               },

@@ -5,16 +5,16 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
 
-class AddCategoryPage extends StatefulWidget {
+class AddProductPage extends StatefulWidget {
   final Function(String name, String imagePath) onAddCategory;
 
-  const AddCategoryPage({required this.onAddCategory});
+  const AddProductPage({required this.onAddCategory});
 
   @override
-  _AddCategoryPageState createState() => _AddCategoryPageState();
+  _AddProductPageState createState() => _AddProductPageState();
 }
 
-class _AddCategoryPageState extends State<AddCategoryPage> {
+class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController _nameController = TextEditingController();
   File? _selectedImage;
 
@@ -41,7 +41,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     }
   }
 
-  Future<void> _addCategoryToDatabase() async {
+  Future<void> _addTypeToDatabase() async {
     if (_nameController.text.isEmpty || _selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบถ้วน')),
@@ -119,7 +119,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _addCategoryToDatabase,
+              onPressed: _addTypeToDatabase,
               child: const Text('เพิ่มประเภท'),
             ),
           ],
