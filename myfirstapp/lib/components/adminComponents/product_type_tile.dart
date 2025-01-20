@@ -53,17 +53,9 @@ class _ProductTypeTileState extends State<ProductTypeTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('ประเภทสินค้า'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _fetchProductTypes, // ดึงข้อมูลใหม่
-          ),
-        ],
-      ),
-      body: Column(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: _productTypes.isEmpty
@@ -117,7 +109,7 @@ class _ProductTypeTileState extends State<ProductTypeTile> {
                                     productTypeId: productType['product_type_id'],
                                     currentName: productType['name'],
                                     currentImage: productType['image'],
-                                    onUpdate: _fetchProductTypes, // เรียกฟังก์ชันเพื่อรีเฟรชข้อมูลหลังอัปเดต
+                                    onUpdate: _fetchProductTypes,
                                   ),
                                 ),
                               );
