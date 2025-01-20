@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/components/userComponents/userServices/cate_dynamic_product.dart';
 
 class MyCategories extends StatefulWidget {
   const MyCategories({Key? key}) : super(key: key);
@@ -96,45 +97,42 @@ class _MyCategoriesState extends State<MyCategories> {
               itemCount: _categories.length,
               itemBuilder: (context, index) {
                 final category = _categories[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        height: 100,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: category['image'] != null
-                              ? DecorationImage(
-                            image: NetworkImage(category['image']),
-                            fit: BoxFit.contain,
-                          )
-                              : null,
-                          color: Colors.grey.shade300,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CateDynamicProductPage(
+                          productTypeId: category['product_type_id'], // ส่ง product_type_id
+                          categoryName: category['name'], // ส่งชื่อประเภท
                         ),
                       ),
-                      Container(
-                        height: 100,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.black.withOpacity(0.5),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    width: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: category['image'] != null
+                          ? DecorationImage(
+                        image: NetworkImage(category['image']),
+                        fit: BoxFit.cover,
+                      )
+                          : null,
+                      color: Colors.grey.shade300,
+                    ),
+                    child: Center(
+                      child: Text(
+                        category['name'],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Center(
-                          child: Text(
-                            category['name'],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ],
+                    ),
                   ),
                 );
               },
@@ -176,39 +174,53 @@ class PlaceholderPage extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: category['image'] != null
-                      ? DecorationImage(
-                    image: NetworkImage(category['image']),
-                    fit: BoxFit.contain,
-                  )
-                      : null,
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.black.withOpacity(0.5),
-                ),
-                child: Center(
-                  child: Text(
-                    category['name'],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
+          return GestureDetector(
+            onTap: () {
+              // ไปที่หน้า CateDynamicProductPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CateDynamicProductPage(
+                    productTypeId: category['product_type_id'], // ส่ง product_type_id
+                    categoryName: category['name'], // ส่งชื่อหมวดหมู่
                   ),
                 ),
-              ),
-            ],
+              );
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: category['image'] != null
+                        ? DecorationImage(
+                      image: NetworkImage(category['image']),
+                      fit: BoxFit.cover,
+                    )
+                        : null,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    //color: Colors.black.withOpacity(0.5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      category['name'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
