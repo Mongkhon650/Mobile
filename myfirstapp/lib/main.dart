@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myfirstapp/models/category_model.dart';
+import 'package:myfirstapp/models/orders.dart';
 import 'package:provider/provider.dart';
 import 'package:myfirstapp/page/welcome_page.dart';
 import 'package:myfirstapp/models/stock.dart';
-import 'package:myfirstapp/models/cart.dart';
+import 'package:myfirstapp/models/new_cart.dart';
+import 'package:myfirstapp/models/address_provider.dart';
 import 'package:myfirstapp/models/favorite_manager.dart';
 
 
@@ -13,8 +15,10 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => CategoryModel()),
         ChangeNotifierProvider(create: (_) => Stock()),
-        ChangeNotifierProvider(create: (_) => Cart()),
+        ChangeNotifierProvider(create: (_) => NewCart()),
         ChangeNotifierProvider(create: (_) => FavoriteManager()), // เพิ่ม FavoriteManager
+        ChangeNotifierProvider(create: (_) => AddressProvider()),
+        ChangeNotifierProvider(create: (_) => Orders()),
       ],
       child: const MyApp(),
     ),

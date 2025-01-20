@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:myfirstapp/components/shirt_app_bar.dart';
 import 'package:myfirstapp/models/stock.dart';
@@ -448,3 +449,4 @@ class _ShirtPageState extends State<ShirtPage> {
     );
   }
 }
+*/

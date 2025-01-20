@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myfirstapp/components/my_button.dart';
 import 'package:myfirstapp/components/select_address_bar.dart';
+import 'package:myfirstapp/models/address_provider.dart';
 
 class AddAddressUser extends StatefulWidget {
   const AddAddressUser({super.key});
@@ -21,10 +22,14 @@ class _AddAddressUserState extends State<AddAddressUser> {
 
   void _addAddress() {
     if (_formKey.currentState!.validate()) {
-      final newAddress = {
-        'name': _nameController.text,
-        'province': _provinceController.text,
-      };
+      final newAddress = Address(
+        name: _nameController.text,
+        subDistrict: _subDistrictController.text,
+        district: _districtController.text,
+        province: _provinceController.text,
+        postalCode: _postalCodeController.text,
+        phone: _phoneController.text,
+      );
       Navigator.pop(context, newAddress);
     }
   }
@@ -47,13 +52,11 @@ class _AddAddressUserState extends State<AddAddressUser> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("เพิ่มที่อยู่", style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
+                Text(
+                  "เพิ่มที่อยู่",
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
-
                 SizedBox(height: 20),
-
                 Form(
                   key: _formKey,
                   child: Column(
@@ -100,9 +103,7 @@ class _AddAddressUserState extends State<AddAddressUser> {
                   ),
                 ),
                 SizedBox(height: 20),
-                MyButton(
-                  onTap: _addAddress, 
-                  text: "เพิ่มที่อยู่"),
+                MyButton(onTap: _addAddress, text: "เพิ่มที่อยู่"),
               ],
             ),
           ),

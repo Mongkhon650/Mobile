@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:myfirstapp/page/userPages/select_address.dart';
 import 'package:provider/provider.dart';
-import 'package:myfirstapp/models/cart.dart';
+import 'package:myfirstapp/models/new_cart.dart';
 import 'package:myfirstapp/components/userComponents/cart_tile.dart';
 import 'package:myfirstapp/components/my_button.dart';
 
+import 'select_address.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Cart>(
+    return Consumer<NewCart>(
       builder: (context, cart, child) {
-        final userCart = cart.items; // Access cart items directly from Cart model
+        final userCart = cart.items;
 
         return Scaffold(
           appBar: AppBar(
@@ -59,19 +59,25 @@ class CartPage extends StatelessWidget {
                         itemCount: userCart.length,
                         itemBuilder: (context, index) {
                           final cartItem = userCart[index];
-                          return MyCartTile(cartItem: cartItem,removeButtons: false,);
+                          return MyCartTile(
+                            cartItem: cartItem,
+                            removeButtons: false,
+                          );
                         },
                       ),
               ),
               MyButton(
                 onTap: () {
+
                   Navigator.push(
-                    context, 
+                    context,
                     MaterialPageRoute(
-                      builder: (context) => SelectAddress()),
+                      builder: (context) => const SelectAddress(),
+                    ),
                   );
+
                 },
-                text: "ชำระเงิน",
+                text: "เลือกสถานที่ส่ง",
               ),
               const SizedBox(height: 25),
             ],

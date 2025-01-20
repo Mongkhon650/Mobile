@@ -3,7 +3,10 @@ import 'package:myfirstapp/components/userComponents/my_drawer_tile.dart';
 import 'package:myfirstapp/page/userPages/cart_page.dart';
 import 'package:myfirstapp/page/userPages/home_page.dart';
 import 'package:myfirstapp/page/userPages/favorite_page.dart';
+import 'package:myfirstapp/page/userPages/setting_page.dart';
 import 'package:myfirstapp/page/welcome_page.dart';
+
+import '../../page/userPages/my_orders.dart';
 
 class MyDrawer extends StatelessWidget {
   final String userName; // รับ userName จาก HomePage
@@ -67,7 +70,18 @@ class MyDrawer extends StatelessWidget {
           ),
           MyDrawerTile(
             text: "My Orders",
-            onTap: () => Navigator.pop(context),
+            onTap: ()  => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyOrdersPage()),
+            ),
+          ),
+
+          MyDrawerTile(
+            text: "Setting",
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SettingPage()),
+            ),
           ),
 
           MyDrawerTile(

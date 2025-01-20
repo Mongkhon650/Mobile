@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myfirstapp/components/my_quantity_selector.dart';
 import 'package:provider/provider.dart';
-import 'package:myfirstapp/models/cart.dart';
-import 'package:myfirstapp/models/cart_item.dart';
+import 'package:myfirstapp/models/new_cart.dart';
 
 class MyCartTile extends StatelessWidget {
   final CartItem cartItem;
@@ -16,7 +15,7 @@ class MyCartTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<Cart>(
+    return Consumer<NewCart>(
       builder: (context, cart, child) => Stack(
         children: [
           Container(
@@ -35,11 +34,18 @@ class MyCartTile extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          cartItem.shirt.imagePath[0],
+                        child: Image.network(
+                          cartItem.image,
                           height: 100,
                           width: 100,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.broken_image,
+                              size: 100,
+                              color: Colors.grey,
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -48,38 +54,22 @@ class MyCartTile extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              cartItem.shirt.name,
+                              cartItem.name,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  '\$${cartItem.totalPrice.toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                                if (cartItem.shirt.promotion != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      '\$${cartItem.shirt.price.toStringAsFixed(2)}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                        decoration: TextDecoration.lineThrough,
-                                      ),
-                                    ),
-                                  ),
-                              ],
+                            Text(
+                              '\$${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      if (!removeButtons) // ซ่อน QuantitySelector เมื่อ removeButtons เป็น true
+                      if (!removeButtons)
                         Padding(
                           padding: const EdgeInsets.only(top: 30),
                           child: QuantitySelector(
@@ -99,33 +89,10 @@ class MyCartTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (cartItem.selectedSize != null ||
-                    cartItem.selectedColor != null)
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    child: Row(
-                      children: [
-                        if (cartItem.selectedSize != null)
-                          Chip(
-                            label: Text("Size: ${cartItem.selectedSize.name}"),
-                            backgroundColor: Colors.grey[200],
-                          ),
-                        if (cartItem.selectedColor != null)
-                          const SizedBox(width: 8),
-                        if (cartItem.selectedColor != null)
-                          Chip(
-                            label:
-                                Text("Color: ${cartItem.selectedColor.name}"),
-                            backgroundColor: Colors.grey[200],
-                          ),
-                      ],
-                    ),
-                  ),
               ],
             ),
           ),
-          if (!removeButtons) // ซ่อนปุ่มกากบาทเมื่อ removeButtons เป็น true
+          if (!removeButtons)
             Positioned(
               top: 16,
               right: 28,
