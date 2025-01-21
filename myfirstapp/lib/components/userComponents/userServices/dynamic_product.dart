@@ -19,6 +19,7 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
   Map<String, dynamic>? _product;
   bool _isLoading = true;
 
+  bool isFavorite = false; // สถานะการ Favorite (เปลี่ยนเป็น true เมื่อคลิก)
   @override
   void initState() {
     super.initState();
@@ -145,6 +146,7 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -171,14 +173,57 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // ชื่อสินค้า
-                Text(
-                  _product?['name'] ?? 'Unknown',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
-                  ),
+                // ชื่อสินค้า และ Wishlist
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _product?['name'] ?? 'Unknown',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                        overflow: TextOverflow.ellipsis, // ตัดข้อความหากยาวเกิน
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isFavorite = !isFavorite; // สลับสถานะ
+                        });
+
+                        /*final snackBarText = isFavorite
+                            ? 'เพิ่มใน Wishlist แล้ว!'
+                            : 'ลบออกจาก Wishlist แล้ว!';
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(snackBarText),
+                          ),
+                        );*/
+                      },
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isFavorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.grey,
+                          ),
+                          const SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับข้อความ
+                          const Text(
+                            "Favorite",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
 
@@ -191,9 +236,19 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                     color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // ปุ่มเพิ่มในตะกร้า
+                // คำอธิบายสินค้า
+                Text(
+                  _product?['description'] ?? 'ไม่มีคำอธิบายสินค้า',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 125),
+
+                // ปุ่มเพิ่มในตะกร้า (เลื่อนไปด้านล่าง)
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
