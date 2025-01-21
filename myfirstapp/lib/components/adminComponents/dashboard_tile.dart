@@ -1,32 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class DashboardTile extends StatelessWidget {
-  final List<Map<String, dynamic>> menuItems = [
-    {"count": 10, "label": "ประเภทสินค้า", "onTap": () => print("ประเภทสินค้า")},
-    {"count": 25, "label": "รายการสินค้า", "onTap": () => print("รายการสินค้า")},
-    {"count": 5, "label": "หมวดหมู่", "onTap": () => print("หมวดหมู่")},
-    {"count": 50, "label": "สินค้าที่ถูกสั่งซื้อ", "onTap": () => print("สินค้าที่ถูกสั่งซื้อ")},
-    {"count": 100, "label": "จำนวนผู้ใช้งาน", "onTap": () => print("จำนวนผู้ใช้งาน")},
-    {"count": 5000, "label": "รายได้", "onTap": () => print("รายได้")},
-  ];
+class DashboardTile extends StatefulWidget {
+  @override
+  _DashboardTileState createState() => _DashboardTileState();
+}
+
+class _DashboardTileState extends State<DashboardTile> {
+  bool _isLoading = true;
+  Map<String, dynamic> _dashboardData = {
+    "productTypes": 0,
+    "products": 0,
+    "categories": 0,
+    "orders": 0,
+    "users": 0,
+    "revenue": 0,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDashboardData();
+  }
+
+  Future<void> _fetchDashboardData() async {
+    try {
+      // สมมติ URL API
+      final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/dashboard'));
+      if (response.statusCode == 200) {
+        setState(() {
+          _dashboardData = json.decode(response.body);
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load dashboard data');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.topCenter, // ชิดกรอบบน
+      alignment: Alignment.topCenter,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0), // Padding รอบๆ กลุ่มเมนู
-        child: Wrap(
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Wrap(
           spacing: 16.0,
           runSpacing: 16.0,
           alignment: WrapAlignment.start,
-          children: menuItems.map((item) {
-            return MenuBox(
-              count: item['count'],
-              label: item['label'],
-              onTap: item['onTap'],
-            );
-          }).toList(),
+          children: [
+            MenuBox(
+              count: _dashboardData["productTypes"],
+              label: "ประเภทสินค้า",
+              onTap: () => print("ประเภทสินค้า"),
+            ),
+            MenuBox(
+              count: _dashboardData["products"],
+              label: "รายการสินค้า",
+              onTap: () => print("รายการสินค้า"),
+            ),
+            MenuBox(
+              count: _dashboardData["categories"],
+              label: "หมวดหมู่",
+              onTap: () => print("หมวดหมู่"),
+            ),
+            MenuBox(
+              count: _dashboardData["orders"],
+              label: "สินค้าที่ถูกสั่งซื้อ",
+              onTap: () => print("สินค้าที่ถูกสั่งซื้อ"),
+            ),
+            MenuBox(
+              count: _dashboardData["users"],
+              label: "จำนวนผู้ใช้งาน",
+              onTap: () => print("จำนวนผู้ใช้งาน"),
+            ),
+            MenuBox(
+              count: _dashboardData["revenue"],
+              label: "รายได้",
+              onTap: () => print("รายได้"),
+            ),
+          ],
         ),
       ),
     );

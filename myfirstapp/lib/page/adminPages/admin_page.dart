@@ -32,7 +32,7 @@ class _AdminPageState extends State<AdminPage> {
     ProductListTile(),
     CategoriesTile(),
     OrderedProductTile(),
-    UserDetileTile(),
+    UserDetailTile(),
   ];
 
   @override
