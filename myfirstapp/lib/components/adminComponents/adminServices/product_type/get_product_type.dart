@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class ProductTypeServiceGet {
   static Future<List<dynamic>> fetchProductTypes() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/get-product-types'));
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-product-types'));
       if (response.statusCode == 200) {
         return json.decode(response.body); // แปลงข้อมูล JSON เป็น List
       } else {

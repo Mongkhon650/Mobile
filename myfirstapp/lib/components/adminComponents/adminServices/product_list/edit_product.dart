@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class EditProductPage extends StatefulWidget {
   final int productId;
@@ -81,9 +82,9 @@ class _EditProductPageState extends State<EditProductPage> {
   Future<void> _fetchProductTypesAndCategories() async {
     try {
       final productTypeResponse =
-      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-product-types'));
+      await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-product-types'));
       final categoryResponse =
-      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-categories'));
+      await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-categories'));
 
       if (productTypeResponse.statusCode == 200 &&
           categoryResponse.statusCode == 200) {
@@ -115,7 +116,7 @@ class _EditProductPageState extends State<EditProductPage> {
 
   Future<void> _updateProduct() async {
     try {
-      final uri = Uri.parse('http://10.0.2.2:3000/api/update-product/${widget.productId}');
+      final uri = Uri.parse('${AppConfig.baseUrl}/api/update-product/${widget.productId}');
       final request = http.MultipartRequest('POST', uri);
 
       request.fields['name'] = _nameController.text.trim();

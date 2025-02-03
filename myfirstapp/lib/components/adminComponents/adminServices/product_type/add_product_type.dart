@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
+import 'package:myfirstapp/utils/config.dart';
 
 class AddProductPage extends StatefulWidget {
   final Function(String name, String imagePath) onAddCategory;
@@ -49,7 +50,7 @@ class _AddProductPageState extends State<AddProductPage> {
       return;
     }
 
-    final uri = Uri.parse('http://10.0.2.2:3000/api/add-product-type');
+    final uri = Uri.parse('${AppConfig.baseUrl}/api/add-product-type');
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['name'] = _nameController.text;

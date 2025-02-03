@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class AddProductPage extends StatefulWidget {
   final Function() onAddProduct;
@@ -41,9 +42,9 @@ class _AddProductPageState extends State<AddProductPage> {
   Future<void> _fetchProductTypesAndCategories() async {
     try {
       final productTypeResponse =
-      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-product-types'));
+      await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-product-types'));
       final categoryResponse =
-      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-categories'));
+      await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-categories'));
 
       if (productTypeResponse.statusCode == 200 &&
           categoryResponse.statusCode == 200) {
@@ -88,7 +89,7 @@ class _AddProductPageState extends State<AddProductPage> {
     }
 
     try {
-      final uri = Uri.parse('http://10.0.2.2:3000/api/add-product');
+      final uri = Uri.parse('${AppConfig.baseUrl}/api/add-product');
       final request = http.MultipartRequest('POST', uri);
 
       // ส่งข้อมูลสินค้า
@@ -148,7 +149,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/add-promotion'),
+        Uri.parse('${AppConfig.baseUrl}/api/add-promotion'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'product_id': productId,

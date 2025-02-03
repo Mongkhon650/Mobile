@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class UserDetailTile extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _UserDetailTileState extends State<UserDetailTile> {
 
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/users'));
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/users'));
       if (response.statusCode == 200) {
         setState(() {
           _users = json.decode(response.body);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class MySearchfield extends StatefulWidget {
   final Function(List<dynamic>) onSearchResults;
@@ -18,7 +19,7 @@ class _MySearchfieldState extends State<MySearchfield> {
   Future<void> _fetchSearchResults(String query) async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/search-products?query=$query'),
+        Uri.parse('${AppConfig.baseUrl}/api/search-products?query=$query'),
       );
 
       if (response.statusCode == 200) {

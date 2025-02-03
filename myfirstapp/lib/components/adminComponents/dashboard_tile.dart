@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class DashboardTile extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _DashboardTileState extends State<DashboardTile> {
   Future<void> _fetchDashboardData() async {
     try {
       // สมมติ URL API
-      final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/dashboard'));
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/dashboard'));
       if (response.statusCode == 200) {
         setState(() {
           _dashboardData = json.decode(response.body);

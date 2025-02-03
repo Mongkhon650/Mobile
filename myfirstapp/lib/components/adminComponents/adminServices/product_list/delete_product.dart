@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:myfirstapp/utils/config.dart';
 
 class ProductServiceDelete {
   static Future<void> deleteProduct(int productId) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://10.0.2.2:3000/api/delete-product/$productId'),
+        Uri.parse('${AppConfig.baseUrl}/api/delete-product/$productId'),
       );
 
       if (response.statusCode != 200) {

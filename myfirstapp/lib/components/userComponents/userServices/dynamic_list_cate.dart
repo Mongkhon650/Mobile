@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dynamic_product.dart';
+import 'package:myfirstapp/utils/config.dart';
 
 class DynamicListCategories extends StatefulWidget {
   const DynamicListCategories({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
     try {
       // ดึงหมวดหมู่
       final categoriesResponse = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/get-categories'),
+        Uri.parse('${AppConfig.baseUrl}/api/get-categories'),
       );
 
       if (categoriesResponse.statusCode == 200) {
@@ -36,7 +37,7 @@ class _DynamicListCategoriesState extends State<DynamicListCategories> {
         for (var category in categories) {
           final categoryId = category['category_id'];
           final productsResponse = await http.get(
-            Uri.parse('http://10.0.2.2:3000/api/get-products/$categoryId'), // ใช้ API ใหม่
+            Uri.parse('${AppConfig.baseUrl}/api/get-products/$categoryId'), // ใช้ API ใหม่
           );
 
           if (productsResponse.statusCode == 200) {

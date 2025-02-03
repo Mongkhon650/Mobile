@@ -4,6 +4,7 @@ import 'package:myfirstapp/components/my_sliver_app_bar.dart';
 import 'package:myfirstapp/models/new_cart.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class DynamicProductPage extends StatefulWidget {
   final int productId;
@@ -29,7 +30,7 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
   Future<void> _fetchProductDetails() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/get-product/${widget.productId}'),
+        Uri.parse('${AppConfig.baseUrl}/api/get-product/${widget.productId}'),
       );
 
       if (response.statusCode == 200) {

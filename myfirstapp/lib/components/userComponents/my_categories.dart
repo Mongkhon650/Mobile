@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:myfirstapp/components/userComponents/userServices/cate_dynamic_product.dart';
+import 'package:myfirstapp/utils/config.dart';
 
 class MyCategories extends StatefulWidget {
   const MyCategories({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _MyCategoriesState extends State<MyCategories> {
   Future<void> _fetchCategories() async {
     try {
       final response =
-      await http.get(Uri.parse('http://10.0.2.2:3000/api/get-product-types')); // URL ของ API
+      await http.get(Uri.parse('${AppConfig.baseUrl}/api/get-product-types')); // URL ของ API
       if (response.statusCode == 200) {
         setState(() {
           _categories = json.decode(response.body);

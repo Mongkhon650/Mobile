@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class AddCategoryPage extends StatefulWidget {
   final Function() onAddCategory;
@@ -31,7 +32,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
       print('Request Body (Flutter): $requestBody'); // Debug ข้อมูลที่จะส่งไป
 
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/add-category'),
+        Uri.parse('${AppConfig.baseUrl}/api/add-category'),
         headers: {'Content-Type': 'application/json'}, // เพิ่ม Content-Type
         body: jsonEncode(requestBody), // แปลงข้อมูลเป็น JSON String
       );

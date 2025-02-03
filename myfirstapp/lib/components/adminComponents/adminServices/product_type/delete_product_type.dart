@@ -1,9 +1,10 @@
 import 'package:http/http.dart' as http;
+import 'package:myfirstapp/utils/config.dart';
 
 class ProductTypeServiceDel {
   static Future<void> deleteProductType(int id) async {
     try {
-      final response = await http.delete(Uri.parse('http://10.0.2.2:3000/api/delete-product-type/$id'));
+      final response = await http.delete(Uri.parse('${AppConfig.baseUrl}/api/delete-product-type/$id'));
       if (response.statusCode != 200) {
         throw Exception('เกิดข้อผิดพลาดในการลบประเภทสินค้า');
       }

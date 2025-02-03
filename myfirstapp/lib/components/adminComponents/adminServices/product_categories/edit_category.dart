@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class EditCategoryPage extends StatefulWidget {
   final int categoryId;
@@ -46,7 +47,7 @@ class _EditCategoryPageState extends State<EditCategoryPage> {
 
       // ส่งคำขอไปยังเซิร์ฟเวอร์
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/update-category/${widget.categoryId}'),
+        Uri.parse('${AppConfig.baseUrl}/api/update-category/${widget.categoryId}'),
         headers: {
           'Content-Type': 'application/json',
         },

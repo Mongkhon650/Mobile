@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p; // ใช้สำหรับจัดการชื่อไฟล์
+import 'package:myfirstapp/utils/config.dart';
 
 class EditProductTypePage extends StatefulWidget {
   final int productTypeId;
@@ -54,7 +55,7 @@ class _EditProductTypePageState extends State<EditProductTypePage> {
     }
 
     try {
-      final uri = Uri.parse('http://10.0.2.2:3000/api/update-product-type/${widget.productTypeId}');
+      final uri = Uri.parse('${AppConfig.baseUrl}/api/update-product-type/${widget.productTypeId}');
       final request = http.MultipartRequest('POST', uri);
 
       request.fields['name'] = _nameController.text;

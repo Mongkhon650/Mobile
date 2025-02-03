@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dynamic_product.dart';
+import 'package:myfirstapp/utils/config.dart';
 
 class CateDynamicProductPage extends StatefulWidget {
   final int productTypeId; // รับ productTypeId เพื่อดึงสินค้าตามประเภท
@@ -31,7 +32,7 @@ class _CateDynamicProductPageState extends State<CateDynamicProductPage> {
   Future<void> _fetchProducts() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:3000/api/get-products-by-type/${widget.productTypeId}'),
+        Uri.parse('${AppConfig.baseUrl}/api/get-products-by-type/${widget.productTypeId}'),
       );
 
       if (response.statusCode == 200) {
