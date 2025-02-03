@@ -9,8 +9,7 @@ import 'package:myfirstapp/utils/config.dart';
 class DynamicProductPage extends StatefulWidget {
   final int productId;
 
-  const DynamicProductPage({Key? key, required this.productId})
-      : super(key: key);
+  const DynamicProductPage({Key? key, required this.productId}) : super(key: key);
 
   @override
   _DynamicProductPageState createState() => _DynamicProductPageState();
@@ -19,12 +18,14 @@ class DynamicProductPage extends StatefulWidget {
 class _DynamicProductPageState extends State<DynamicProductPage> {
   Map<String, dynamic>? _product;
   bool _isLoading = true;
+  bool isFavorite = false;
+  int userId = 1; // ต้องใช้ userId จากระบบ login จริง
 
-  bool isFavorite = false; // สถานะการ Favorite (เปลี่ยนเป็น true เมื่อคลิก)
   @override
   void initState() {
     super.initState();
     _fetchProductDetails();
+    _checkFavoriteStatus();
   }
 
   Future<void> _fetchProductDetails() async {
@@ -145,9 +146,51 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
     );
   }
 
+  Future<void> _checkFavoriteStatus() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${AppConfig.baseUrl}/api/check-wishlist?user_id=$userId&product_id=${widget.productId}'),
+      );
+
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body);
+        setState(() {
+          isFavorite = result['isFavorite'];
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error checking favorite status: $e')),
+      );
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    final url = isFavorite
+        ? '${AppConfig.baseUrl}/api/remove-from-wishlist'
+        : '${AppConfig.baseUrl}/api/add-to-wishlist';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'user_id': userId, 'product_id': widget.productId}),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating favorite: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -166,15 +209,14 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                 // รูปสินค้า
                 Center(
                   child: Image.network(
-                    _product?['image'] ??
-                        'https://via.placeholder.com/300',
+                    _product?['image'] ?? 'https://via.placeholder.com/300',
                     height: 300,
                     fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // ชื่อสินค้า และ Wishlist
+                // ชื่อสินค้า และ Favorite
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -186,24 +228,11 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[800],
                         ),
-                        overflow: TextOverflow.ellipsis, // ตัดข้อความหากยาวเกิน
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isFavorite = !isFavorite; // สลับสถานะ
-                        });
-
-                        /*final snackBarText = isFavorite
-                            ? 'เพิ่มใน Wishlist แล้ว!'
-                            : 'ลบออกจาก Wishlist แล้ว!';
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(snackBarText),
-                          ),
-                        );*/
-                      },
+                      onTap: _toggleFavorite,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -213,7 +242,7 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                                 : Icons.favorite_border,
                             color: isFavorite ? Colors.red : Colors.grey,
                           ),
-                          const SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับข้อความ
+                          const SizedBox(width: 4),
                           const Text(
                             "Favorite",
                             style: TextStyle(
@@ -249,27 +278,23 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                 ),
                 const SizedBox(height: 125),
 
-                // ปุ่มเพิ่มในตะกร้า (เลื่อนไปด้านล่าง)
+                // ปุ่มเพิ่มในตะกร้า
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
                       if (_product != null) {
-                        final maxStock =
-                            _product!['stock'] ?? 0;
+                        final maxStock = _product!['stock'] ?? 0;
 
                         if (maxStock > 0) {
                           _showQuantityDialog(context, maxStock);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('สินค้าหมดสต็อก')),
+                            const SnackBar(content: Text('สินค้าหมดสต็อก')),
                           );
                         }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'ไม่สามารถโหลดข้อมูลสินค้าได้')),
+                          const SnackBar(content: Text('ไม่สามารถโหลดข้อมูลสินค้าได้')),
                         );
                       }
                     },
