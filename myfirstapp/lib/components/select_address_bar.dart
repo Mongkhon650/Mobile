@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 
-
 class SelectAddressBar extends StatelessWidget {
   const SelectAddressBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.white,
       pinned: true,
-      // เปลี่ยนเป็น IconButton สำหรับ back อยู่ทางซ้าย
+      floating: false,
+      elevation: 2,
+      title: Align(
+        alignment: Alignment.centerLeft, //
+        child: const Text(
+          "เลือกที่อยู่",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ),
       leading: IconButton(
         onPressed: () {
-          Navigator.pop(context); // กลับไปยังหน้าเดิมเมื่อกดปุ่ม back
+          Navigator.pop(context);
         },
-        icon: const Icon(Icons.arrow_back_ios),
+        icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
       ),
-    );;
+    );
   }
 }
