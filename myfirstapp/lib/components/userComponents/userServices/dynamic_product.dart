@@ -135,29 +135,30 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
-
                     if (_product != null) {
-                      final cartItem = CartItem(
-                        productId:
-                        _product!['product_id'], // ตรวจสอบคีย์ที่ถูกต้อง
-                        name: _product!['name'],
-                        image: _product!['image'] ?? '',
-                        price: double.parse(_product!['price'].toString()),
-                        quantity: quantity,
-                      );
-
-                      Provider.of<NewCart>(context, listen: false)
-                          .addToCart(cartItem);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content:
-                            Text('เพิ่มสินค้า $quantity ชิ้นในตะกร้า')),
-                      );
+                      final maxStock = _product!['stock'] ?? 0;
+                      if (maxStock > 0) {
+                        Provider.of<NewCart>(context, listen: false).addToCart(
+                          CartItem(
+                            cartItemId: 0, // ตั้งเป็น 0 เพราะจะได้ค่าใหม่จากเซิร์ฟเวอร์
+                            productId: _product!['product_id'],
+                            name: _product!['name'],
+                            image: _product!['image'] ?? '',
+                            price: double.parse(_product!['price'].toString()),
+                            quantity: 1,
+                          ),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('เพิ่มสินค้าลงในตะกร้าแล้ว!')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('สินค้าหมดสต็อก')),
+                        );
+                      }
                     }
                   },
-                  child: const Text('ยืนยัน'),
+                  child: const Text('เพิ่มในตะกร้า'),
                 ),
               ],
             );

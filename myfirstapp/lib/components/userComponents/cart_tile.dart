@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:myfirstapp/components/my_quantity_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:myfirstapp/models/new_cart.dart';
 
 class MyCartTile extends StatelessWidget {
   final CartItem cartItem;
-  final bool removeButtons; // กำหนดให้สามารถซ่อนปุ่มได้
+  final bool removeButtons; // ✅ เพิ่มตัวแปรนี้
 
-  const MyCartTile({
-    super.key,
-    required this.cartItem,
-    this.removeButtons = true, // ค่าเริ่มต้นแสดงปุ่ม
-  });
+  const MyCartTile({super.key, required this.cartItem, this.removeButtons = true}); // ✅ แก้ไข Constructor
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +25,6 @@ class MyCartTile extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -39,13 +33,7 @@ class MyCartTile extends StatelessWidget {
                           height: 100,
                           width: 100,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.broken_image,
-                              size: 100,
-                              color: Colors.grey,
-                            );
-                          },
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 100, color: Colors.grey),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -55,35 +43,36 @@ class MyCartTile extends StatelessWidget {
                           children: [
                             Text(
                               cartItem.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
                               '\$${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                              style: TextStyle(color: Theme.of(context).colorScheme.primary),
                             ),
                           ],
                         ),
                       ),
-                      if (!removeButtons)
+                      if (!removeButtons) // ✅ ซ่อนปุ่มเพิ่ม-ลดถ้า removeButtons เป็น true
                         Padding(
                           padding: const EdgeInsets.only(top: 30),
-                          child: QuantitySelector(
-                            quantity: cartItem.quantity,
-                            onIncrement: () {
-                              cart.updateItemQuantity(
-                                  cartItem, cartItem.quantity + 1);
-                            },
-                            onDecrement: () {
-                              if (cartItem.quantity > 1) {
-                                cart.updateItemQuantity(
-                                    cartItem, cartItem.quantity - 1);
-                              }
-                            },
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  if (cartItem.quantity > 1) {
+                                    cart.updateItemQuantity(cartItem.cartItemId, cartItem.quantity - 1);
+                                  }
+                                },
+                              ),
+                              Text('${cartItem.quantity}'),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  cart.updateItemQuantity(cartItem.cartItemId, cartItem.quantity + 1);
+                                },
+                              ),
+                            ],
                           ),
                         ),
                     ],
@@ -98,12 +87,9 @@ class MyCartTile extends StatelessWidget {
               right: 28,
               child: GestureDetector(
                 onTap: () {
-                  cart.removeItem(cartItem);
+                  cart.removeItem(cartItem.cartItemId);
                 },
-                child: Icon(
-                  Icons.close,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                child: Icon(Icons.close, color: Theme.of(context).colorScheme.error),
               ),
             ),
         ],

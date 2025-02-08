@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:myfirstapp/utils/config.dart';
 
 class CartItem {
+  final int cartItemId;
   final int productId;
   final String name;
   final String image;
@@ -8,6 +13,7 @@ class CartItem {
   int quantity;
 
   CartItem({
+    required this.cartItemId,
     required this.productId,
     required this.name,
     required this.image,
@@ -17,42 +23,121 @@ class CartItem {
 }
 
 class NewCart with ChangeNotifier {
-  final List<CartItem> _items = [];
+  List<CartItem> _items = [];
 
   List<CartItem> get items => _items;
 
-  void addToCart(CartItem item) {
-    // ตรวจสอบว่าสินค้านี้อยู่ในตะกร้าแล้วหรือไม่
-    final existingItemIndex = _items.indexWhere((i) => i.productId == item.productId);
+  double get totalPrice => _items.fold(0.0, (sum, item) => sum + (item.price * item.quantity)); // ✅ เพิ่ม getter นี้
 
-    if (existingItemIndex >= 0) {
-      // หากมีสินค้าอยู่ในตะกร้าแล้ว เพิ่มจำนวน
-      _items[existingItemIndex].quantity += item.quantity;
-    } else {
-      // หากยังไม่มีสินค้าในตะกร้า เพิ่มใหม่
-      _items.add(item);
-    }
-    notifyListeners();
-  }
+  Future<void> fetchCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id') ?? 0;
+    if (userId == 0) return;
 
-  void updateItemQuantity(CartItem item, int newQuantity) {
-    final itemIndex = _items.indexWhere((i) => i.productId == item.productId);
+    final url = Uri.parse("${AppConfig.baseUrl}/api/get-cart/$userId");
+    print("🔹 Fetching cart from: $url");
 
-    if (itemIndex >= 0 && newQuantity > 0) {
-      _items[itemIndex].quantity = newQuantity;
+    final response = await http.get(url);
+
+    print("🔹 Response status: ${response.statusCode}");
+    print("🔹 Response body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      print("🔹 Parsed cart data: $data");
+
+      _items = data.map((item) => CartItem(
+        cartItemId: item['cart_item_id'],
+        productId: item['product_id'],
+        name: item['name'],
+        price: double.parse(item['price'].toString()),
+        image: item['image'] ?? '',
+        quantity: item['quantity'],
+      )).toList();
+
       notifyListeners();
+    } else {
+      print("❌ Failed to fetch cart: ${response.body}");
     }
   }
 
-  void removeItem(CartItem item) {
-    _items.removeWhere((i) => i.productId == item.productId);
-    notifyListeners();
+
+  Future<void> addToCart(CartItem item) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id') ?? 0;
+    if (userId == 0) return;
+
+    final url = Uri.parse("${AppConfig.baseUrl}/api/add-to-cart");
+    final headers = {"Content-Type": "application/json"};
+    final body = jsonEncode({
+      "user_id": userId,
+      "product_id": item.productId,
+      "quantity": item.quantity,
+    });
+
+    print("🔹 Sending request to: $url");
+    print("🔹 Headers: $headers");
+    print("🔹 Body: $body");
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    print("🔹 Response status: ${response.statusCode}");
+    print("🔹 Response body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      fetchCart();
+    } else {
+      print("❌ Failed to add to cart: ${response.body}");
+    }
   }
 
-  void clearCart() {
-    _items.clear();
-    notifyListeners();
+
+  Future<void> updateItemQuantity(int cartItemId, int newQuantity) async {
+    if (newQuantity < 1) return;
+
+    final response = await http.put(
+      Uri.parse("${AppConfig.baseUrl}/api/update-cart-item/$cartItemId"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"quantity": newQuantity}),
+    );
+
+    if (response.statusCode == 200) {
+      fetchCart();
+    } else {
+      print("Failed to update cart item: ${response.body}");
+    }
   }
 
-  double get totalPrice => _items.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+  Future<void> removeItem(int cartItemId) async {
+    final url = Uri.parse("${AppConfig.baseUrl}/api/remove-from-cart/$cartItemId");
+
+    print("🔹 Sending DELETE request to: $url");
+
+    final response = await http.delete(url);
+
+    print("🔹 Response status: ${response.statusCode}");
+    print("🔹 Response body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      fetchCart();  // โหลดตะกร้าใหม่หลังจากลบ
+    } else {
+      print("❌ Failed to remove item: ${response.body}");
+    }
+  }
+
+
+  Future<void> clearCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id') ?? 0;
+    if (userId == 0) return;
+
+    final response = await http.delete(Uri.parse("${AppConfig.baseUrl}/api/clear-cart/$userId"));
+
+    if (response.statusCode == 200) {
+      _items.clear();
+      notifyListeners();
+    } else {
+      print("Failed to clear cart: ${response.body}");
+    }
+  }
 }
