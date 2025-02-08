@@ -4,9 +4,9 @@ import 'package:myfirstapp/models/new_cart.dart';
 
 class MyCartTile extends StatelessWidget {
   final CartItem cartItem;
-  final bool removeButtons; // ✅ เพิ่มตัวแปรนี้
+  final bool removeButtons;
 
-  const MyCartTile({super.key, required this.cartItem, this.removeButtons = true}); // ✅ แก้ไข Constructor
+  const MyCartTile({super.key, required this.cartItem, this.removeButtons = true});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class MyCartTile extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (!removeButtons) // ✅ ซ่อนปุ่มเพิ่ม-ลดถ้า removeButtons เป็น true
+                      if (!removeButtons) //ซ่อนปุ่มเพิ่ม-ลดถ้า removeButtons เป็น true
                         Padding(
                           padding: const EdgeInsets.only(top: 30),
                           child: Row(

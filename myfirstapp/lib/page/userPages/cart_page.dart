@@ -69,7 +69,7 @@ class _CartPageState extends State<CartPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator()); // กำลังโหลด
           } else if (snapshot.hasError) {
-            return Center(child: Text("❌ เกิดข้อผิดพลาด: ${snapshot.error}"));
+            return Center(child: Text("เกิดข้อผิดพลาด: ${snapshot.error}"));
           }
 
           return Consumer<NewCart>(

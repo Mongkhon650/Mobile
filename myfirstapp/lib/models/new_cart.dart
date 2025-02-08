@@ -39,27 +39,24 @@ class NewCart with ChangeNotifier {
 
     final response = await http.get(url);
 
-    print("🔹 Response status: ${response.statusCode}");
-    print("🔹 Response body: ${response.body}");
-
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      print("🔹 Parsed cart data: $data");
 
       _items = data.map((item) => CartItem(
         cartItemId: item['cart_item_id'],
         productId: item['product_id'],
         name: item['name'],
         price: double.parse(item['price'].toString()),
-        image: item['image'] ?? '',
+        image: item['image'] ?? "https://via.placeholder.com/150",
         quantity: item['quantity'],
       )).toList();
 
       notifyListeners();
     } else {
-      print("❌ Failed to fetch cart: ${response.body}");
+      print("Failed to fetch cart: ${response.body}");
     }
   }
+
 
 
   Future<void> addToCart(CartItem item) async {
@@ -87,7 +84,7 @@ class NewCart with ChangeNotifier {
     if (response.statusCode == 200) {
       fetchCart();
     } else {
-      print("❌ Failed to add to cart: ${response.body}");
+      print("Failed to add to cart: ${response.body}");
     }
   }
 
@@ -121,7 +118,7 @@ class NewCart with ChangeNotifier {
     if (response.statusCode == 200) {
       fetchCart();  // โหลดตะกร้าใหม่หลังจากลบ
     } else {
-      print("❌ Failed to remove item: ${response.body}");
+      print("Failed to remove item: ${response.body}");
     }
   }
 
