@@ -7,15 +7,38 @@ import 'package:myfirstapp/page/userPages/checklist_page.dart';
 import 'package:provider/provider.dart';
 import 'package:myfirstapp/models/address_provider.dart';
 
-class SelectAddress extends StatelessWidget {
+class SelectAddress extends StatefulWidget {
   const SelectAddress({super.key});
+
+  @override
+  _SelectAddressState createState() => _SelectAddressState();
+}
+
+class _SelectAddressState extends State<SelectAddress> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAddresses();
+  }
+
+  Future<void> _loadAddresses() async {
+    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    await addressProvider.fetchAddresses();
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final addressProvider = Provider.of<AddressProvider>(context);
 
     return Scaffold(
-      body: Column(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator()) // แสดงโหลดเมื่อยังโหลดข้อมูลไม่เสร็จ
+          : Column(
         children: [
           Expanded(
             child: NestedScrollView(
@@ -51,8 +74,8 @@ class SelectAddress extends StatelessWidget {
                             subtitle: Text(address.province),
                             trailing: IconButton(
                               icon: const Icon(Icons.close),
-                              onPressed: () {
-                                addressProvider.removeAddress(index);
+                              onPressed: () async {
+                                await addressProvider.removeAddress(index);
                               },
                             ),
                           );
@@ -61,12 +84,12 @@ class SelectAddress extends StatelessWidget {
                     ),
                     AddAddressButton(
                       onTap: () async {
-                        final newAddress = await Navigator.push(
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const AddAddressUser()),
                         );
-                        if (newAddress != null) {
-                          addressProvider.addAddress(newAddress);
+                        if (result == true) {
+                          _loadAddresses(); // โหลดที่อยู่อีกครั้งหลังจากเพิ่ม
                         }
                       },
                       text: "เพิ่มที่อยู่",
