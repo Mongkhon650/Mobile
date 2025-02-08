@@ -90,20 +90,24 @@ class NewCart with ChangeNotifier {
 
 
   Future<void> updateItemQuantity(int cartItemId, int newQuantity) async {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1) return; // ห้ามลดจนเหลือ 0
 
-    final response = await http.put(
-      Uri.parse("${AppConfig.baseUrl}/api/update-cart-item/$cartItemId"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"quantity": newQuantity}),
-    );
+    final url = Uri.parse("${AppConfig.baseUrl}/api/update-cart-item/$cartItemId");
+    final headers = {"Content-Type": "application/json"};
+    final body = jsonEncode({"quantity": newQuantity});
+
+    print("🔹 Updating cart item: $cartItemId to quantity: $newQuantity");
+
+    final response = await http.put(url, headers: headers, body: body);
 
     if (response.statusCode == 200) {
-      fetchCart();
+      print("✅ Cart item updated successfully!");
+      await fetchCart(); // อัปเดตตะกร้าหลังจากเปลี่ยนจำนวนสินค้า
     } else {
-      print("Failed to update cart item: ${response.body}");
+      print("❌ Failed to update cart item: ${response.body}");
     }
   }
+
 
   Future<void> removeItem(int cartItemId) async {
     final url = Uri.parse("${AppConfig.baseUrl}/api/remove-from-cart/$cartItemId");

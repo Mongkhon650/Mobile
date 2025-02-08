@@ -145,9 +145,13 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
                             name: _product!['name'],
                             image: _product!['image'] ?? '',
                             price: double.parse(_product!['price'].toString()),
-                            quantity: 1,
+                            quantity: quantity, // ใช้ค่าที่ผู้ใช้เลือก
                           ),
                         );
+
+                        // ✅ ปิด AlertDialog หลังจากเพิ่มสินค้า
+                        Navigator.pop(context);
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('เพิ่มสินค้าลงในตะกร้าแล้ว!')),
                         );
