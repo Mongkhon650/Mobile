@@ -6,7 +6,6 @@ import 'package:myfirstapp/page/welcome_page.dart';
 import 'package:myfirstapp/models/stock.dart';
 import 'package:myfirstapp/models/new_cart.dart';
 import 'package:myfirstapp/models/address_provider.dart';
-import 'package:myfirstapp/models/favorite_manager.dart';
 
 
 void main() {
@@ -16,7 +15,6 @@ void main() {
         ChangeNotifierProvider(create: (_) => CategoryModel()),
         ChangeNotifierProvider(create: (_) => Stock()),
         ChangeNotifierProvider(create: (_) => NewCart()),
-        ChangeNotifierProvider(create: (_) => FavoriteManager()), // เพิ่ม FavoriteManager
         ChangeNotifierProvider(create: (_) => AddressProvider()),
         ChangeNotifierProvider(create: (_) => Orders()),
       ],

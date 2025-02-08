@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:myfirstapp/utils/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class FavoritePage extends StatefulWidget {
   @override
   _FavoritePageState createState() => _FavoritePageState();
@@ -10,7 +11,7 @@ class FavoritePage extends StatefulWidget {
 
 class _FavoritePageState extends State<FavoritePage> {
   List<dynamic> favoriteItems = [];
-  int userId = 0; // กำหนดค่าเริ่มต้นเป็น 0
+  int userId = 0;
   bool isLoading = true;
   bool hasError = false;
 
@@ -23,7 +24,7 @@ class _FavoritePageState extends State<FavoritePage> {
   Future<void> _fetchUserIdAndFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      userId = prefs.getInt('user_id') ?? 0; // ดึง user_id จาก SharedPreferences
+      userId = prefs.getInt('user_id') ?? 0;
     });
 
     if (userId == 0) {
@@ -40,16 +41,16 @@ class _FavoritePageState extends State<FavoritePage> {
   Future<void> _fetchFavorites() async {
     try {
       final response = await http.get(
-        Uri.parse('${AppConfig.baseUrl}/api/get-favorites?user_id=$userId'),
+        Uri.parse('${AppConfig.baseUrl}/api/get-wishlist?user_id=$userId'), // ✅ เปลี่ยน API
       );
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
-        print("📌 API Response: $result");
+        print("API Response: $result");
 
-        if (result['success'] == true && result.containsKey('favorites')) {
+        if (result['success'] == true && result.containsKey('wishlist')) {
           setState(() {
-            favoriteItems = result['favorites'];
+            favoriteItems = result['wishlist'];
             isLoading = false;
             hasError = false;
           });
@@ -60,7 +61,7 @@ class _FavoritePageState extends State<FavoritePage> {
         throw Exception("Error ${response.statusCode}");
       }
     } catch (e) {
-      print("❌ Fetch Favorites Error: $e");
+      print("Fetch Favorites Error: $e");
       setState(() {
         isLoading = false;
         hasError = true;
@@ -68,16 +69,37 @@ class _FavoritePageState extends State<FavoritePage> {
     }
   }
 
+  Future<void> _removeFromFavorites(int productId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.baseUrl}/api/remove-from-wishlist'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'user_id': userId, 'product_id': productId}),
+      );
+
+      if (response.statusCode == 200) {
+        await _fetchFavorites(); //
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("ลบสินค้าออกจาก Wishlist สำเร็จ")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("เกิดข้อผิดพลาดในการลบสินค้า")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Favorite Products")),
+      appBar: AppBar(title: Text("Favorite")), //
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : hasError
           ? Center(child: Text("เกิดข้อผิดพลาดในการโหลดข้อมูล"))
           : favoriteItems.isEmpty
-          ? Center(child: Text("ไม่มีสินค้าใน Favorite"))
+          ? Center(child: Text("ไม่มีสินค้าใน Favorite ของคุณ"))
           : RefreshIndicator(
         onRefresh: _fetchFavorites,
         child: ListView.builder(
@@ -88,7 +110,14 @@ class _FavoritePageState extends State<FavoritePage> {
             return Card(
               margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: ListTile(
-                leading: Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover),
+                leading: Image.network(
+                  item['image'], //
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                ),
                 title: Text(item['name']),
                 subtitle: Text("฿${item['price']}"),
                 trailing: IconButton(
@@ -101,26 +130,5 @@ class _FavoritePageState extends State<FavoritePage> {
         ),
       ),
     );
-  }
-
-  Future<void> _removeFromFavorites(int productId) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${AppConfig.baseUrl}/api/remove-from-wishlist'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'user_id': userId, 'product_id': productId}),
-      );
-
-      if (response.statusCode == 200) {
-        _fetchFavorites();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("ลบสินค้าออกจาก Favorite สำเร็จ")),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("เกิดข้อผิดพลาดในการลบสินค้า")),
-      );
-    }
   }
 }
