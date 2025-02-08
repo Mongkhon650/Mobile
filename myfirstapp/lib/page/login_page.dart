@@ -5,6 +5,7 @@ import 'package:myfirstapp/page/userPages/home_page.dart';
 import 'package:myfirstapp/services/auth_service.dart';
 import 'package:myfirstapp/page/register_page.dart';
 import 'package:myfirstapp/page/adminPages/admin_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onTap;
@@ -28,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      // เรียก API login ผ่าน authService
       final response = await authService.login(
         emailController.text,
         passwordController.text,
@@ -36,16 +36,17 @@ class _LoginPageState extends State<LoginPage> {
 
       print("Response from API: $response");
 
-      // ตรวจสอบผลลัพธ์
       if (response["success"] == true) {
+        // เก็บ user_id ไว้ใน SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('user_id', response["user_id"]); // เก็บ user_id
+
         if (response["isAdmin"] == true) {
-          // หากเป็น Admin
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const AdminPage()),
           );
         } else {
-          // หากเป็น User
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -54,13 +55,11 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } else {
-        // แสดงข้อความผิดพลาด
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(response["message"] ?? "Login failed")),
         );
       }
     } catch (e) {
-      // กรณีเกิดข้อผิดพลาด
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("An error occurred: $e")),
       );

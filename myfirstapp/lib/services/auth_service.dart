@@ -20,12 +20,12 @@ class AuthService {
         final data = jsonDecode(response.body);
         print("Decoded Data: $data");
 
-        // รับค่าที่สำคัญจาก API
         return {
           "success": true,
           "token": data["token"],
           "name": data["name"],
-          "isAdmin": data["isAdmin"], // ใช้ isAdmin จากฐานข้อมูล
+          "isAdmin": data["isAdmin"],
+          "user_id": data["user_id"], // ใช้ key "user_id" จาก API response
         };
       } else {
         final data = jsonDecode(response.body);

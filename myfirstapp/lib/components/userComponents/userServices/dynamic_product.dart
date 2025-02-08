@@ -5,6 +5,7 @@ import 'package:myfirstapp/models/new_cart.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:myfirstapp/utils/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DynamicProductPage extends StatefulWidget {
   final int productId;
@@ -19,13 +20,33 @@ class _DynamicProductPageState extends State<DynamicProductPage> {
   Map<String, dynamic>? _product;
   bool _isLoading = true;
   bool isFavorite = false;
-  int userId = 1; // ต้องใช้ userId จากระบบ login จริง
+  int userId = 0; // กำหนดค่าเริ่มต้นเป็น 0
 
+  @override
   @override
   void initState() {
     super.initState();
-    _fetchProductDetails();
-    _checkFavoriteStatus();
+    _fetchUserIdAndProductDetails();
+  }
+
+  Future<void> _fetchUserIdAndProductDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getInt('user_id') ?? 0; // ดึง user_id จาก SharedPreferences
+    });
+
+    if (userId == 0) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('กรุณาล็อกอินเพื่อใช้งานฟังก์ชันนี้')),
+      );
+      return;
+    }
+
+    await _fetchProductDetails();
+    await _checkFavoriteStatus();
   }
 
   Future<void> _fetchProductDetails() async {
