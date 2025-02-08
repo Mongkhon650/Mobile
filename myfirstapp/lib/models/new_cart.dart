@@ -132,13 +132,19 @@ class NewCart with ChangeNotifier {
     final userId = prefs.getInt('user_id') ?? 0;
     if (userId == 0) return;
 
-    final response = await http.delete(Uri.parse("${AppConfig.baseUrl}/api/clear-cart/$userId"));
+    final url = Uri.parse("${AppConfig.baseUrl}/api/clear-cart/$userId");
+
+    print("🔹 Sending DELETE request to: $url");
+
+    final response = await http.delete(url);
 
     if (response.statusCode == 200) {
-      _items.clear();
+      print("Cart cleared successfully!");
+      _items.clear();  // ล้างรายการสินค้าในตะกร้า
       notifyListeners();
     } else {
       print("Failed to clear cart: ${response.body}");
     }
   }
+
 }

@@ -38,24 +38,25 @@ class _CartPageState extends State<CartPage> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text("Are you sure you want to clear the cart?"),
+                      title: const Text("ลบสินค้าทั้งหมด?"),
+                      content: const Text("คุณแน่ใจหรือไม่ว่าต้องการลบสินค้าทั้งหมดออกจากตะกร้า?"),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text("Cancel"),
+                          child: const Text("ยกเลิก"),
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
-                            cart.clearCart();
+                            Navigator.pop(context); // ปิด Dialog
+                            cart.clearCart(); // ล้างตะกร้า
                           },
-                          child: const Text("Yes"),
+                          child: const Text("ลบ"),
                         ),
                       ],
                     ),
                   );
                 },
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color: Colors.black),
               )
                   : const SizedBox.shrink();
             },
